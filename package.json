@@ -1,0 +1,35 @@
+{
+  "name": "a-share-research-desk",
+  "version": "0.1.0",
+  "description": "按需采集、分析 A 股上市公司公开披露信息的桌面工作台",
+  "main": "src/main.js",
+  "author": "",
+  "license": "MIT",
+  "scripts": {
+    "start": "electron .",
+    "dev": "electron .",
+    "dist:mac": "electron-builder --mac",
+    "dist": "electron-builder"
+  },
+  "devDependencies": {
+    "electron": "^38.1.0",
+    "electron-builder": "^26.0.12"
+  },
+  "build": {
+    "appId": "com.local.ashareresearchdesk",
+    "productName": "A股研究台",
+    "files": [
+      "src/**/*",
+      "package.json"
+    ],
+    "mac": {
+      "category": "public.app-category.finance"
+    },
+    "directories": {
+      "output": "release"
+    }
+  },
+  "dependencies": {
+    "pdfjs-dist": "^6.3.289"
+  }
+}

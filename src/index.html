@@ -1,0 +1,162 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>A股研究台</title>
+    <link rel="stylesheet" href="./styles.css" />
+  </head>
+  <body>
+    <div class="app-shell">
+      <aside class="sidebar">
+        <div class="brand">
+          <div class="brand-mark">A<span>/</span></div>
+          <div><strong>研究台</strong><small>RESEARCH DESK</small></div>
+        </div>
+        <nav>
+          <button class="nav-item active" data-view="research"><span class="nav-icon">⌘</span>研究任务</button>
+          <button class="nav-item" data-view="assets"><span class="nav-icon">▦</span>数据资产</button>
+          <button class="nav-item" data-view="concepts"><span class="nav-icon">◌</span>概念词典</button>
+          <button class="nav-item" data-view="history"><span class="nav-icon">↗</span>任务记录</button>
+        </nav>
+        <div class="sidebar-bottom">
+          <div class="source-status"><i></i><div><b>数据源状态</b><span id="status-text">演示模式 · 待接入</span></div></div>
+          <button class="settings" data-view="settings"><span>⚙</span> 数据源与设置</button>
+          <div class="version">v0.1.0 · 本地工作台</div>
+        </div>
+      </aside>
+
+      <main class="main-content">
+
+        <!-- 研究任务 -->
+        <div id="view-research" class="view active">
+          <header class="topbar">
+            <div><span class="eyebrow">ON-DEMAND INTELLIGENCE</span><h1>研究任务</h1></div>
+            <div class="top-actions"><span class="local-pill"><i></i>本地运行</span><button class="avatar">研</button></div>
+          </header>
+
+          <section class="command-panel">
+            <div class="panel-heading"><div><span class="section-kicker">01 / 提出问题</span><h2>告诉我你想研究什么</h2></div><span class="no-scan">启动时不扫描全市场</span></div>
+            <div class="command-box">
+              <textarea id="command" rows="2" placeholder="例如：先获得科创50当中的市值最大的10支股票的信息">先获得科创50当中的市值最大的10支股票的信息</textarea>
+              <button class="run-button" id="run-button"><span class="play">▶</span>开始执行</button>
+            </div>
+            <div class="suggestions"><span>试试这些：</span><button data-command="先获得科创50当中的市值最大的10支股票的信息">科创50 · 市值前 10</button><button data-command="在已经分析的股票当中查找业务包含晶圆代工的企业">已分析中查晶圆代工</button><button data-command="获取新能源行业的上市公司">新能源行业概览</button></div>
+            <div class="scope-control">
+              <span class="scope-label">本轮搜索范围</span>
+              <div class="scope-toggle" id="scope-toggle">
+                <button class="scope-btn active" data-scope="all">全部股票（含未分析）</button>
+                <button class="scope-btn" data-scope="cached">仅已分析股票</button>
+              </div>
+            </div>
+          </section>
+
+          <section class="workspace-grid">
+            <div class="process-card card">
+              <div class="card-title"><div><span class="section-kicker">02 / 执行过程</span><h3>按需工作流</h3></div><span class="live-label"><i></i><span id="workflow-state">等待指令</span></span></div>
+              <div class="pipeline" id="pipeline"></div>
+              <div class="principle"><span>⌁</span><div><b>只获取完成任务所需的数据</b><p>范围由你的指令决定，后续步骤可以继续追加，不会在启动时预先分析全市场。</p></div></div>
+            </div>
+            <div class="context-card card">
+              <div class="card-title"><div><span class="section-kicker">任务上下文</span><h3>本次研究</h3></div><button class="more">•••</button></div>
+              <div class="context-empty" id="context-empty"><div class="empty-orbit">◎</div><b>还没有执行任务</b><span>提交一个问题后，这里会显示<br />范围、时间和数据覆盖情况。</span></div>
+              <div class="context-details hidden" id="context-details"></div>
+            </div>
+          </section>
+
+          <section class="results-card card" id="results-card">
+            <div class="card-title results-header"><div><span class="section-kicker">03 / 研究结果</span><h3 id="result-title">结果将在这里出现</h3></div><div class="result-actions"><span id="result-count"></span><button class="export-button" id="export-button" disabled>↓ 导出结果</button></div></div>
+            <div class="result-placeholder" id="result-placeholder"><div class="placeholder-lines"><i></i><i></i><i></i></div><span>执行任务后，将以证据卡片的形式呈现结果</span></div>
+            <div class="results-content hidden" id="results-content"></div>
+          </section>
+
+          <footer><span>所有结论应以原始披露文件为准</span><span>数据采集按需发生 · 本地缓存</span></footer>
+        </div>
+
+        <!-- 数据资产 -->
+        <div id="view-assets" class="view">
+          <header class="topbar">
+            <div><span class="eyebrow">DATA ASSETS</span><h1>数据资产</h1></div>
+            <div class="top-actions"><button class="ghost-btn" id="assets-refresh">↻ 刷新</button></div>
+          </header>
+          <div id="assets-summary" class="assets-hero"></div>
+          <section class="card section-card">
+            <div class="card-title"><div><span class="section-kicker">已缓存股票数据</span><h3>研究缓存</h3></div><button class="ghost-danger" id="assets-clear">清空全部缓存</button></div>
+            <div class="table-wrap"><table class="result-table" id="assets-table"><thead><tr><th>代码</th><th>公司</th><th>分析覆盖</th><th>缓存时间</th><th>业务与逐年事实</th></tr></thead><tbody id="assets-tbody"></tbody></table></div>
+          </section>
+          <footer><span>缓存仅保存在本地</span><span>路径由 Electron userData 决定</span></footer>
+        </div>
+
+        <!-- 概念词典 -->
+        <div id="view-concepts" class="view">
+          <header class="topbar">
+            <div><span class="eyebrow">CONCEPT DICTIONARY</span><h1>概念词典</h1></div>
+            <div class="top-actions"></div>
+          </header>
+          <div class="concept-intro"><p>查询时自动扩展的相关词表。后续可在此维护同义词、上下位词和产业链关系；目前为内置初版。</p></div>
+          <div class="concept-grid" id="concept-grid"></div>
+          <footer><span>概念关系用于检索扩展与证据判定</span><span>同义词 ≠ 等价业务</span></footer>
+        </div>
+
+        <!-- 任务记录 -->
+        <div id="view-history" class="view">
+          <header class="topbar">
+            <div><span class="eyebrow">TASK LOG</span><h1>任务记录</h1></div>
+            <div class="top-actions"><button class="ghost-danger" id="history-clear">清空记录</button></div>
+          </header>
+          <div class="history-empty" id="history-empty"><div class="empty-orbit">◎</div><b>还没有任务记录</b><span>执行研究任务后会在这里显示历史。</span></div>
+          <div class="history-list" id="history-list"></div>
+          <footer><span>任务记录仅保存在本地</span><span>最多保留 200 条</span></footer>
+        </div>
+
+        <!-- 数据源与设置 -->
+        <div id="view-settings" class="view">
+          <header class="topbar">
+            <div><span class="eyebrow">SETTINGS</span><h1>数据源与设置</h1></div>
+            <div class="top-actions"></div>
+          </header>
+
+          <div class="settings-layout">
+            <section class="card settings-card">
+              <div class="card-title"><div><span class="section-kicker">AI 模型</span><h3>接入任何 OpenAI 兼容接口</h3></div></div>
+              <form id="settings-form" class="settings-form">
+                <div class="field"><label>API Base URL</label><input id="set-baseurl" placeholder="https://api.deepseek.com" /><small>例如 DeepSeek: https://api.deepseek.com · Moonshot: https://api.moonshot.cn · 智谱: https://open.bigmodel.cn</small></div>
+                <div class="field"><label>API Key</label><input id="set-apikey" type="password" placeholder="sk-..." autocomplete="off" /><small>仅保存在本机，不会上传到任何地方</small></div>
+                <div class="field"><label>模型名称</label><input id="set-model" placeholder="deepseek-chat / gpt-4o / moonshot-v1-8k ..." /><small>填写该服务商实际支持的模型名</small></div>
+                <div class="field-row">
+                  <div class="field"><label>最大输出 tokens</label><input id="set-maxtokens" type="number" min="512" step="512" placeholder="8192" /><small>推理模型建议 ≥ 8192，防止长输出被截断</small></div>
+                  <div class="field"><label>请求超时（秒）</label><input id="set-timeout" type="number" min="10" step="10" placeholder="120" /><small>推理模型思考时间长，建议 ≥ 120</small></div>
+                </div>
+                <div class="field"><label>附加参数（可选，中转站专用）</label><textarea id="set-extra" rows="2" placeholder='留空即可。若中转站要求额外字段，填 JSON，例如：{"thinking": true} 或 {"reasoning_effort": "high"}'></textarea><small>以 JSON 传入的额外请求字段，会合并到请求体（不会覆盖 model/messages）</small></div>
+                <div class="field"><label><input type="checkbox" id="set-realdata" style="margin-right:6px" />接入巨潮资讯网真实年报全文</label><small>开启后，分析公司时自动从巨潮下载年报 PDF（默认最近一年，指令写明"近十年/多年/某一年"时按要求的年度范围下载），业务事实与引文来自真实披露文件，并每日增量补更最新年报。关闭则仅用 AI 训练知识。</small></div>
+                <div class="form-actions">
+                  <button type="submit" class="primary-btn">保存设置</button>
+                  <button type="button" class="ghost-btn" id="test-btn">测试连接</button>
+                  <button type="button" class="ghost-btn" id="models-btn">获取模型能力</button>
+                </div>
+                <div id="test-result" class="test-result"></div>
+                <div id="models-result" class="test-result"></div>
+              </form>
+              <div class="current-config" id="current-config"></div>
+            </section>
+
+            <section class="card settings-card">
+              <div class="card-title"><div><span class="section-kicker">说明</span><h3>如何接入</h3></div></div>
+              <ol class="instructions">
+                <li>前往你选择的 AI 服务商官网注册账号</li>
+                <li>在控制台创建 API Key</li>
+                <li>填写上方的 Base URL、Key、模型名</li>
+                <li>点击「测试连接」验证</li>
+                <li>保存后回来执行研究任务即可使用 AI 分析</li>
+              </ol>
+              <div class="provider-tips" id="provider-tips"></div>
+            </section>
+          </div>
+          <footer><span>配置以 JSON 形式保存在本机 userData 目录</span><span>真实行情数据源将在后续版本接入</span></footer>
+        </div>
+
+      </main>
+    </div>
+    <script src="./renderer.js"></script>
+  </body>
+</html>
